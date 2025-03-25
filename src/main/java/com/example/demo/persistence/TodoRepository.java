@@ -11,7 +11,7 @@ import java.util.List;
 public interface TodoRepository extends JpaRepository<TodoEntity, String> {
     // 자동으로 save(), delete(), findById() 메소드 등이 자동으로 생성됨
 
-    @Query(value = "select * from todo t where t.userId = ?1")
+    //@Query(value = "select * from todo t where t.userId = ?1")
     public List<TodoEntity> findByUserId(String userId);
 
     List<TodoEntity> findByIdAndTitle(String id, String title);

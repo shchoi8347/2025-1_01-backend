@@ -17,7 +17,34 @@ public class TodoDTO {
 
     public TodoDTO(final TodoEntity todoEntity) {
         this.id = todoEntity.getId();
-        this.id = todoEntity.getTitle();
+        this.title = todoEntity.getTitle();
         this.done = todoEntity.isDone();
     }
+
+    public static TodoEntity toEntity(final TodoDTO dto) {
+        return TodoEntity.builder()
+                .id(dto.getId())
+                .title(dto.getTitle())
+                .done(dto.isDone())
+                .build();
+    }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
