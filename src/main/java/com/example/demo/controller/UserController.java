@@ -3,11 +3,14 @@ package com.example.demo.controller;
 import com.example.demo.dto.ResponseDTO;
 import com.example.demo.dto.UserDTO;
 import com.example.demo.model.UserEntity;
+import com.example.demo.persistence.UserRepository;
 import com.example.demo.security.TokenProvider;
 import com.example.demo.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,6 +27,8 @@ public class UserController {
     @Autowired
     private TokenProvider tokenProvider;
 
+    private PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+
     // 사용자 등록 메소드
     @PostMapping("/signup")
     public ResponseEntity<?> registerUser(@RequestBody UserDTO userDTO) {
@@ -33,7 +38,7 @@ public class UserController {
             }
             UserEntity user = UserEntity.builder()
                     .username(userDTO.getUsername())
-                    .password(userDTO.getPassword())
+                    .password(passwordEncoder.encode(userDTO.getPassword()))
                     .build();
             UserEntity registeredUser = userService.create(user);
             UserDTO responseUserDTO = UserDTO.builder()
@@ -50,7 +55,10 @@ public class UserController {
     // 로그인 메소드
     @PostMapping("/signin")
     public ResponseEntity<?> authenticate(@RequestBody UserDTO userDTO) {
-        UserEntity user = userService.getByCredentials(userDTO.getUsername(), userDTO.getPassword());
+        UserEntity user = userService.getByCredentials(
+                userDTO.getUsername(),
+                userDTO.getPassword(),
+                passwordEncoder);
 
         if(user != null) {
             final String token = tokenProvider.create(user); // 토큰 생성
